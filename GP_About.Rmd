@@ -1,0 +1,14 @@
+---
+title: "GP_About"
+author: "Yuanxi Cheng"
+date: "2022-08-19"
+output: html_document
+---
+
+### About
+
+Originating in the grassy mildew hills of Scotland's eastern coast, the sport of golf arose over 500 years ago when a group of Scottish people played a gamne of hitting pebbles across hills with curved wooden sticks. In the mid 1700s, the first official rules of golf as what resembles the rules it plays by today were made. The sport quickly gained popularity in Scotland, and in no time it had been a sport played by many, from peasants to royal families. Around that same time, golf had entered the New World in the colonies. Fast forward to the 21st century, the sport of golf has become widely popular in America, and many of the greatest players are competing in world-renowned tournaments held in the US, such as the US Open and the Masters. But as golf continues to be a prominent sport within the US, the future of golf comes into question. Golf has become a great sport led by legends like Tiger Woods, but where will the sport go under the leadership of the rising generation of junior golfers? And so, the purpose of this project is evaluate the popularity, performance, and potential growth of golf through analysis of competitive junior golfer information.
+
+### Mission
+
+Working with Professor Zhaoxia Yu as part of the UCI Summer Research Program, the underlying goal of our project is to utilize and perform statistic analysis through the through computer coding programs. Because statistics and data science have a large field of application, we chose to focus on an analysis of golf, which may seem a little unorthodox in a program calling for scientific research. However, this project is just as scientific, as it is the process of statistical analysis itself that reflects its scientific nature. However, analyzing datasets containing thousands of values manually proves to be a little impossible, so the use of R, a computer coding language, has been crucial to this project. Under the tutelage of Professor Yu, this project has been a process of computer-driven statistical analysis datasets involving golf, such as player populations and available golf courses by state, as well as datasets that have possible relations and effects on golf popularity, such as weather and household income, in order to evaluate what drives the popularity of golf to thrive, and to get a more visual sense of golf demographics in the US. 

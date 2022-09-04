@@ -312,7 +312,7 @@ ggplot(boysVsStatePop,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(d
 #boys and Girl (separated) pop vs Household Income by State
 boysVsStateInc <- data.frame(x = State_Income$HouseholdIncome, y=boys_map$pop)
 girlsVsStateInc <- data.frame(x = State_Income$HouseholdIncome, y=girls_map$pop)
-ggplot(boysVsStateInc,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsStateInc,colour='red') + xlab("State Population") + ylab("Golfer Population")
+ggplot(boysVsStateInc,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsStateInc,colour='red') + xlab("State Income") + ylab("Golfer Population")
 
 #boys and Girl (separated) pop vs Golf Courses
 boysVsCourses <- data.frame(x = State_Courses$Courses, y=boys_map$pop)
@@ -339,5 +339,47 @@ boysVsAfterHum <- data.frame(x = State_Weather$Afternoon, y=boys_map$pop)
 girlsVsAfterHum <- data.frame(x = State_Weather$Afternoon, y=girls_map$pop)
 ggplot(boysVsAfterHum,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsAfterHum,colour='red') + xlab("Afternoon Humidity") + ylab("Golfer Population")
 
+#fitting linear models
+#boys & girls pop vs state pop
+boysVsStatePopLm <- lm(y ~ x, data = boysVsStatePop)
+girlsVsStatePopLm <- lm(y ~ x, data = girlsVsStatePop)
+#boys & girls pop vs state income
+boysVsStateIncLm <- lm(y ~ x, data = boysVsStateInc)
+girlsVsStateIncLm <- lm(y ~ x, data = girlsVsStateInc)
+#boys & girls pop vs state courses
+boysVsCoursesLm <- lm(y ~ x, data = boysVsCourses)
+girlsVsCoursesLm <- lm(y ~ x, data = girlsVsCourses)
+#boys & girls pop vs state average temp
+boysVsTempLm <- lm(y ~ x, data = boysVsTemp)
+girlsVsTempLm <- lm(y ~ x, data = girlsVsTemp)
+#boys & girls pop vs state precipitation
+boysVsPrecipLm <- lm(y ~ x, data = boysVsPrecip)
+girlsVsPrecipLm <- lm(y ~ x, data = girlsVsPrecip)
+#boys & girls pop vs state humidity AM
+boysVsMornHumLm <- lm(y ~ x, data = boysVsMornHum)
+girlsVsMornHumLm <- lm(y ~ x, data = girlsVsMornHum)
+#boys & girls pop vs state humidity PM
+boysVsAfterHumLm <- lm(y ~ x, data = boysVsAfterHum)
+girlsVsAfterHumLm <- lm(y ~ x, data = girlsVsAfterHum)
+
+#visualizing linear models
+lmList = c(boysVsStatePopLm, girlsVsStatePopLm, boysVsStateIncLm, girlsVsStateIncLm, boysVsCoursesLm, girlsVsCoursesLm, boysVsTempLm, 
+           girlsVsTempLm, boysVsPrecipLm, girlsVsPrecipLm, boysVsMornHumLm, girlsVsMornHumLm, boysVsAfterHumLm, girlsVsAfterHumLm)
+par(mfrow=c(2,2))
+plot(boysVsStatePopLm)
+plot(girlsVsStatePopLm)
+plot(boysVsStateIncLm)
+plot(girlsVsStateIncLm)
+plot(boysVsCoursesLm)
+plot(girlsVsCoursesLm)
+plot(boysVsTempLm)
+plot(girlsVsTempLm)
+plot(boysVsPrecipLm)
+plot(girlsVsPrecipLm)
+plot(boysVsMornHumLm)
+plot(girlsVsMornHumLm)
+plot(boysVsAfterHumLm)
+plot(girlsVsAfterHumLm)
+par(mfrow=c(1,1))
 
 

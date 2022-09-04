@@ -322,7 +322,7 @@ ggplot(boysVsCourses,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(da
 #boys and Girl (separated) pop vs State Temperature 
 boysVsTemp <- data.frame(x = State_Weather$AvgF, y=boys_map$pop)
 girlsVsTemp <- data.frame(x = State_Weather$AvgF, y=girls_map$pop)
-ggplot(boysVsTemp,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsTemp,colour='red') + xlab("Temperature Fahrenheit") + ylab("Golfer Population")
+ggplot(boysVsTemp,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsTemp,colour='red') + xlab("Avg Temperature Fahrenheit") + ylab("Golfer Population")
 
 #boys and Girl (separated) pop vs State Precipitation
 boysVsPrecip <- data.frame(x = State_Weather$mm, y=boys_map$pop)

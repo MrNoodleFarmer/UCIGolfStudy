@@ -363,23 +363,51 @@ boysVsAfterHumLm <- lm(y ~ x, data = boysVsAfterHum)
 girlsVsAfterHumLm <- lm(y ~ x, data = girlsVsAfterHum)
 
 #visualizing linear models
-lmList = c(boysVsStatePopLm, girlsVsStatePopLm, boysVsStateIncLm, girlsVsStateIncLm, boysVsCoursesLm, girlsVsCoursesLm, boysVsTempLm, 
-           girlsVsTempLm, boysVsPrecipLm, girlsVsPrecipLm, boysVsMornHumLm, girlsVsMornHumLm, boysVsAfterHumLm, girlsVsAfterHumLm)
 par(mfrow=c(2,2))
+
+summary(boysVsStatePopLm)
 plot(boysVsStatePopLm)
+
+summary(girlsVsStatePopLm)
 plot(girlsVsStatePopLm)
+
+summary(boysVsStateIncLm)
 plot(boysVsStateIncLm)
+
+summary(girlsVsStateIncLm)
 plot(girlsVsStateIncLm)
+
+summary(boysVsCoursesLm)
 plot(boysVsCoursesLm)
+
+summary(girlsVsCoursesLm)
 plot(girlsVsCoursesLm)
+
+summary(boysVsTempLm)
 plot(boysVsTempLm)
+
+summary(girlsVsTempLm)
 plot(girlsVsTempLm)
+
+summary(boysVsPrecipLm)
 plot(boysVsPrecipLm)
+
+summary(girlsVsPrecipLm)
 plot(girlsVsPrecipLm)
+
+summary(boysVsMornHumLm)
 plot(boysVsMornHumLm)
+
+summary(girlsVsMornHumLm)
 plot(girlsVsMornHumLm)
+
+summary(boysVsAfterHumLm)
 plot(boysVsAfterHumLm)
+
+summary(girlsVsAfterHumLm)
 plot(girlsVsAfterHumLm)
+
 par(mfrow=c(1,1))
+
 
 

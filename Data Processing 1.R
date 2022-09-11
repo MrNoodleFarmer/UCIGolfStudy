@@ -1,13 +1,23 @@
 library(usmap)
 library(ggplot2)
 library(shiny)
+library(rmarkdown)
+library(knitr)
 
-boys <- read.csv("C:/Users/roy19/OneDrive/Documents/JGSBoys.csv", head= T)
-girls <- read.csv("C:/Users/roy19/OneDrive/Documents/JGSGirls.csv", head=T)
-State_Pop <- read.csv("C:/Users/roy19/OneDrive/Documents/State_Population.csv", head = T)
-State_Income <- read.csv("C:/Users/roy19/OneDrive/Documents/State_Med_Income.csv", head = T)
-State_Courses <- read.csv("C:/Users/roy19/OneDrive/Documents/State_Courses.csv", head = T)
-State_Weather <- read.csv("C:/Users/roy19/OneDrive/Documents/State_Weather.csv", head = T)
+
+rsconnect::setAccountInfo(name='yuanxicheng',
+                          token='FF88EF16267341188B6038D65C624FA0',
+                          secret='LPRZ68Nm0+ZK2by8l7vJxx2gx/lwjotNBxpOsYEs')
+library(rsconnect)
+rsconnect::deployApp("C:/Users/roy19/OneDrive/Documents/Golf_Research")
+
+
+boys <- read.csv("Golf_Research/JGSBoys.csv", head= T)
+girls <- read.csv("Golf_Research/JGSGirls.csv", head=T)
+State_Pop <- read.csv("Golf_Research/State_Population.csv", head = T)
+State_Income <- read.csv("Golf_Research/State_Med_Income.csv", head = T)
+State_Courses <- read.csv("Golf_Research/State_Courses.csv", head = T)
+State_Weather <- read.csv("Golf_Research/State_Weather.csv", head = T)
 
 #Testing usmap and ggplot2 libraries 
   #plots map with no data
@@ -184,6 +194,7 @@ plot_usmap(regions = "states", data = pop_stand_junior, values = "pop", color = 
 
 
   # Quick conversion of State_Courses' state names using State_Income
+colnames(State_Income)[1] <- "State"
 State_Income <- State_Income[order(State_Income$State),]
 State_Courses["State"] <- State_Income["State"]
 
@@ -196,19 +207,18 @@ rownames(State_Income) <- 1:nrow(State_Income)
 colnames(State_Income)[1] <- "state"
 
 plot_usmap(regions = "states", data = State_Income, values = "HouseholdIncome", color = "black")+
-  scale_fill_continuous(low = "white", high = "red", name = "Income Amount", label = scales::comma)+
+  scale_fill_continuous(low = "white", high = "red", name = "Income Index", label = scales::comma)+
   labs(title = "Median Household Income", subtitle = "Census of the median reported household income per state") +
   theme(legend.position = "right")
 
-  #Total Players divided household income
-pop_per_income <- junior_map
-pop_per_income$pop <- pop_per_income$pop/State_Income$HouseholdIncome
+#Total Players divided household income
+pop_per_income <- pop_stand_junior
+pop_per_income$pop <- pop_per_income$pop*(State_Income$HouseholdIncome)
 
 plot_usmap(regions = "states", data = pop_per_income, values = "pop", color = "black")+
-  scale_fill_continuous(low = "white", high = "red", name = "Income Amount", label = scales::comma)+
+  scale_fill_continuous(low = "white", high = "red", name = "Index", label = scales::comma)+
   labs(title = "Players Per Median Household Income", subtitle = "Players in each state standardized by median income") +
   theme(legend.position = "right")
-
 
 #Map of golf courses in each state
 head(State_Courses, 5)
@@ -226,20 +236,22 @@ plot_usmap(regions = "states", data = State_Courses, values = "Courses", color =
 
 
 #Map of players per golf courses in each state
-pop_per_course <- junior_map
+pop_per_course <- pop_stand_junior
 for (i in 1:50) {
-  pop_per_course$pop[i] <- pop_per_course$pop[i]/State_Courses$Courses[i]
+  pop_per_course$pop[i] <- (pop_per_course$pop[i]*State_Courses$Courses[i])/100000
 }
 plot_usmap(regions = "states", data = pop_per_course, values = "pop", color = "black")+
-  scale_fill_continuous(low = "white", high = "red", name = "Population Num", label = scales::comma)+
+  scale_fill_continuous(low = "white", high = "red", name = "Index Num", label = scales::comma)+
   labs(title = "JGS Players in US in Relation to Courses", subtitle = "Population of Competitive Junior Golf Players across the US 
        divided by the total number of golf courses in each state") +
   theme(legend.position = "right")
 
+
+
   #For girls only
-pop_per_course_girls <- girls_map
+pop_per_course_girls <- pop_stand_girls
 for (i in 1:50) {
-  pop_per_course_girls$pop[i] <- pop_per_course_girls$pop[i]/State_Courses$Courses[i]
+  pop_per_course_girls$pop[i] <- (pop_per_course_girls$pop[i]*State_Courses$Courses[i])
 }
 plot_usmap(regions = "states", data = pop_per_course_girls, values = "pop", color = "black")+
   scale_fill_continuous(low = "white", high = "red", name = "Population Num", label = scales::comma)+
@@ -248,9 +260,9 @@ plot_usmap(regions = "states", data = pop_per_course_girls, values = "pop", colo
   theme(legend.position = "right")
 
   #For Boys only
-pop_per_course_boys <- boys_map
+pop_per_course_boys <- pop_stand_boys
 for (i in 1:50) {
-  pop_per_course_boys$pop[i] <- pop_per_course_boys$pop[i]/State_Courses$Courses[i]
+  pop_per_course_boys$pop[i] <- (pop_per_course_boys$pop[i]*State_Courses$Courses[i])
 }
 
 plot_usmap(regions = "states", data = pop_per_course_boys, values = "pop", color = "black")+
@@ -277,10 +289,10 @@ plot_usmap(regions = "states", data = gbtotal_ratio, values = "pop", color = "bl
   theme(legend.position = "right")
 
 
-#Map of Avg Weather
+#Map of Avg Temp
 State_Weather$state <- state.abb[match(State_Weather$state,state.name)]
 plot_usmap(regions = "states", data = State_Weather, values = "AvgF", color = "black")+
-  scale_fill_continuous(low = "white", high = "red", name = "Temp", label = scales::comma)+
+  scale_fill_continuous(low = "white", high = "red", name = "Fahrenheit", label = scales::comma)+
   labs(title = "Avg Temp by State", subtitle = "The annual average temperature from 1971-2000 of each state by Fahrenheit") +
   theme(legend.position = "right")
 
@@ -296,10 +308,36 @@ plot_usmap(regions = "states", data = State_Weather, values = "Afternoon", color
   labs(title = "Annual Avg Relative Humidity by State", subtitle = "The annual percent humidity of each state from 1971-2000") +
   theme(legend.position = "right")
 
+#Player vs Avg Temp
+juniorVsTemp <- junior_map
+juniorVsTemp$pop <- juniorVsTemp$pop/State_Weather$AvgF
+plot_usmap(regions = "states", data = juniorVsTemp, values = "pop", color = "black")+
+  scale_fill_continuous(low = "white", high = "red", name = "Index", label = scales::comma)+
+  labs(title = "Player Population in Relation to Avg Temp", subtitle = "The annual average temperature from 1971-2000 of each state by Fahrenheit") +
+  theme(legend.position = "right")
+
+
+#Player vs Avg Precipitation
+juniorVsPrecip <- pop_stand_junior
+juniorVsPrecip$pop <- juniorVsPrecip$pop*State_Weather$mm
+plot_usmap(regions = "states", data = juniorVsPrecip, values = "pop", color = "black")+
+  scale_fill_continuous(low = "white", high = "red", name = "Index", label = scales::comma)+
+  labs(title = "Player Population in Relation to Avg Temp", subtitle = "The annual average temperature from 1971-2000 of each state by Fahrenheit") +
+  theme(legend.position = "right")
+
+#Player vs Afternoon Humidity
+juniorVsHum <- pop_stand_junior
+juniorVsHum$pop <- juniorVsHum$pop*State_Weather$Afternoon
+plot_usmap(regions = "states", data = juniorVsHum, values = "pop", color = "black")+
+  scale_fill_continuous(low = "white", high = "red", name = "Index", label = scales::comma)+
+  labs(title = "Player Population in Relation to Avg Temp", subtitle = "The annual average temperature from 1971-2000 of each state by Fahrenheit") +
+  theme(legend.position = "right")
+
 
 
 
 #Scatter plot Graphs
+
 #Junior population vs State Populations
 juniorVsStatePop<- data.frame(x = State_Pop_Temp$POPESTIMATE2021, y= junior_map$pop)
 ggplot(juniorVsStatePop,aes(x = x,y = y)) +geom_point(colour='blue') + xlab("State Population") + ylab("Golfer Population")
@@ -307,7 +345,7 @@ ggplot(juniorVsStatePop,aes(x = x,y = y)) +geom_point(colour='blue') + xlab("Sta
 #Boys and Girl (separated) population vs State Populations
 boysVsStatePop <- data.frame(x = State_Pop_Temp$POPESTIMATE2021, y=boys_map$pop)
 girlsVsStatePop <- data.frame(x = State_Pop_Temp$POPESTIMATE2021, y=girls_map$pop)
-ggplot(boysVsStatePop,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsStatePop,colour='red') + xlab("State Population") + ylab("Golfer Population")
+ggplot(boysVsStatePop,aes(x = x,y = y), group = measure, colour = measure) +geom_point(colour='blue') +geom_point(data=girlsVsStatePop,colour='red') + xlab("State Population") + ylab("Golfer Population") + ggtitle("Junior Population Vs State Population, Separated by Gender")
 
 #boys and Girl (separated) pop vs Household Income by State
 boysVsStateInc <- data.frame(x = State_Income$HouseholdIncome, y=boys_map$pop)
@@ -408,6 +446,12 @@ summary(girlsVsAfterHumLm)
 plot(girlsVsAfterHumLm)
 
 par(mfrow=c(1,1))
+
+#Plotting linear regression line
+plot(y ~ x, data = boysVsStatePop, ylab = "Golfer Population", xlab = "State Population")
+  abline(boysVsStatePopLm)
+
+
 
 
 

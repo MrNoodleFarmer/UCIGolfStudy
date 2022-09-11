@@ -5,12 +5,14 @@ date: "2022-08-19"
 output: html_document
 ---
 
-### Data Overview
+## Data Overview
 
-In this project, there are sets of different datasets that we processed and analyzed. As a general overview, this project focuses on two categories of data: Markers and Possible Influencers. 
+#### In this project, there are sets of different datasets that we processed and analyzed. As a general overview, this project focuses on two categories of data: Markers and Possible Influencers. 
 
-Marker data is essentially the most necessary data needed to grasp the current popularity and distribution of golf players. This includes datasets of junior boys and girls within the nation. 
+#### Marker data is essentially the most necessary data needed to grasp the current popularity and distribution of golf players. This includes datasets of junior boys and girls within the nation. 
 
-Possible influencer data contains datasets of information that might have an effect on the popularity of golf within an area to some degree. These datasets include median household income, number of existing golf courses, and weather by state level. The point of these datasets are to compare them to the population distribution of golf players in order to gauge their influence on popularity.
+#### The data sets of Junior Boys and Girls is taken from the ranking list of JGS (Junior Golf Scoreboard), which records all junior players within the US that are above the age of 10 and have competed a minimum of four 36-hole competitions within the last year. This means that all players recorded within the JGS are serious competitive junior players. Therefore, this data is not a representation of population of golf players as a whole, but a more targeted study of the density and distribution of competitive junior players. 
 
-In this project, we analyzed the data by first processing them into maps of the US separated by the state level and then visually comparing the maps in order to gauge the connection and degree certain data has with golf popularity. When comparing maps, it should be noted that the more maps display similar spatial densities of information, the more directly related the datasets are. Conversely, if maps display opposite spatial densities, then the data is inversely related to each other. The more extreme the similarity or reversal of spatial information, the more they are related to each other. However, if the maps' spatial densities show no certain patterns and seem to be completely random, then that would imply no correlation between the data.
+#### Possible influencer data contains datasets of information that might have an effect on the popularity of golf within an area to some degree. These datasets include median household income, number of existing golf courses, and weather by state level. The point of these datasets are to compare them to the population distribution of golf players in order to gauge their influence on popularity.
+
+#### In this project, we analyzed the data by first processing them into maps of the US separated by the state level and then visually comparing the maps in order to gauge the connection and degree certain data has with golf popularity. When comparing maps, it should be noted that the more maps display similar spatial densities of information, the more directly related the datasets are. Conversely, if maps display opposite spatial densities, then the data is inversely related to each other. The more extreme the similarity or reversal of spatial information, the more they are related to each other. However, if the maps' spatial densities show no certain patterns and seem to be completely random, then that would imply no correlation between the data.

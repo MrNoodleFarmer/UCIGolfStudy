@@ -1,94 +1,113 @@
-
 # Load R packages
 library(rmarkdown)
+library(markdown)
 library(shiny)
 library(shinythemes)
 library(knitr)
 
 #convert rmd files into md files
-rmdfiles <- c("GP_About.rmd", "GP_DataOverview.rmd", "GP_Visualization.rmd")
+rmdfiles <- c("GP_About.Rmd", "GP_DataOverview.Rmd", "GP_Visualization.Rmd", "GP_Evaluation1.Rmd", "GP_Evaluation2.Rmd", "GP_Evaluation3.Rmd", "GP_Evaluation4.Rmd", "GP_Evaluation4_2.Rmd", "GP_Evaluation4_3.Rmd")
 sapply(rmdfiles, knit, quiet = T)
 #when using md files in Shiny, do includeMarkdown("filename")
 
 # Define UI
-ui <- fluidPage(theme = shinytheme("slate"),
+ui <- fluidPage(theme = shinytheme("lumen"),
                 navbarPage(
-                  "Golf Project Name",
-                  tabPanel("Junior Boys",
-                           sidebarPanel(
-                             tags$h3("Input:"),
-                             textInput("txt1", "Given Name:", ""), #txt1 is given to server
-                             textInput("txt2", "Surname:", ""), #txt2 given to server
-                             
-                           ), # sidebarPanel
-                           mainPanel(
-                             h1("Header 1"),
-                             
-                             h4("Output 1"),
-                             verbatimTextOutput("txtout"), #txtout generates from server
-                             
-                           ) # mainPanel
-                           
-                  ), # Navbar 1, tabPanel
+                  "UCI Golf Research Project",
                   
-                  tabPanel("Main", 
-                           "An informational page that includes what this project is and how to navigate it",
+                  tabPanel("The Project", 
                            navlistPanel(widths = c(2,10),
-                             "The Project",
+                             "About",
                              tabPanel("About", 
                                       includeMarkdown("GP_About.md")),
                              "The Data",
                              tabPanel("Data Overview",
                                       includeMarkdown("GP_DataOverview.md")),
                              tabPanel("Visualization",
-                                      includeMarkdown("GP_Visualization.md")),
-                             navbarMenu("Evaluations",
-                                        tabPanel("E1",
-                                                 includeMarkdown("")
-                                                  ),
-                                        tabPanel("E2",
-                                                 includeMarkdown("")
-                                                  ),
-                                        tabPanel("E3",
-                                                 includeMarkdown("")
-                                                  ),
-                                        tabPanel("E4",
-                                                 includeMarkdown("")
-                                                  ),
-                                        tabPanel("E5",
-                                                 includeMarkdown("")
-                                                  ),
-                                        tabPanel("E6",
-                                                 includeMarkdown("")
-                                                  ),
-                                        ),
-                             "The Manual",
-                             tabPanel("Component 5")
+                                      includeMarkdown("GP_Visualization.md"))
                            )),
                   
-                  tabPanel("Junior Boys", 
-                           "show maybe two separate selections for all datamaps in relation to boys, so that the user can compare maps side by side"),
+                  tabPanel("Player and Standardized Population",
+                           includeMarkdown("GP_Evaluation1.md")),
                   
-                  tabPanel("Junior Girls", 
-                           "show maybe two separate selections for all datamaps in relation to girls, so that the user can compare maps side by side"),
+                  tabPanel("Median Household Income",
+                           includeMarkdown("GP_Evaluation2.md")),
                   
-                  tabPanel("Junior Players",
-                           "show maybe two separate selections for all datamaps in relation to all players, so that the user can compare maps side by side."),
+                  tabPanel("Golf Courses Per State",
+                           includeMarkdown("GP_Evaluation3.md")),
                   
+                  tabPanel("Weather",
+                           navlistPanel(widths = c(2,10),
+                                        tabPanel("Temperature", 
+                                                 includeMarkdown("GP_Evaluation4.md")),
+                                        tabPanel("Precipitation",
+                                                 includeMarkdown("GP_Evaluation4_2.md")),
+                                        tabPanel("Humidity",
+                                                 includeMarkdown("GP_Evaluation4_3.md")),
+                           )
+                  ),
+                
                   navbarMenu("More",
-                             tabPanel("Datasets"),
+                             tabPanel("Datasets",
+                             sidebarLayout(
+                               
+                               # Sidebar panel for inputs ----
+                               sidebarPanel(
+                                 
+                                 # Input: Selector for choosing dataset ----
+                                 selectInput(inputId = "dataset",
+                                             label = "Choose Dataset to Preview:",
+                                             choices = c("JGS boys", "JGS girls", "State Median Household Income", "State Population", "Golf Courses", 'Weather')),
+                                 
+                                 # Input: Numeric entry for number of obs to view ----
+                                 numericInput(inputId = "obs",
+                                              label = "Number of observations to view:",
+                                              value = 10,
+                                              step = 5)
+                               ),
+                               
+                               # Main panel for displaying outputs ----
+                               mainPanel(
+                                 
+                                 # Output: Verbatim text for data summary ----
+                                 verbatimTextOutput("summary"),
+                                 
+                                 # Output: HTML table with requested number of observations ----
+                                 tableOutput("view")
+                                 
+                               )
+                             )),
                              tabPanel("Future Work"))
                   
                 ) # navbarPage
 ) # fluidPage
 
 
-# Define server function  
+# Define server logic to summarize and view selected dataset ----
 server <- function(input, output) {
   
-  output$txtout <- renderText({
-    paste( input$txt1, input$txt2, sep = " " )
+  # Return the requested dataset ----
+  datasetInput <- reactive({
+    switch(input$dataset,
+           "JGS boys" = boysUS,
+           "JGS girls" = girlsUS,
+           "State Med Household Income" = State_Income,
+           "State Population" = State_Pop,
+           "Golf Courses" = State_Courses,
+           "weather" = State_Weather)
   })
+  
+  # Generate a summary of the dataset ----
+  output$summary <- renderPrint({
+    dataset <- datasetInput()
+    summary(dataset)
+  })
+  
+  # Show the first "n" observations ----
+  output$view <- renderTable({
+    head(datasetInput(), n = input$obs)
+  })
+  
 } # server
 
 

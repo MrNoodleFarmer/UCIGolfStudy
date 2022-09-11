@@ -1,16 +1,15 @@
 ---
-title: "GP_Visualization"
+title: "GP_Evaluation4"
 author: "Yuanxi Cheng"
-date: "2022-08-19"
+date: "2022-09-09"
 output: html_document
 ---
 
-## Visualized Data
-
-```{r setup0, echo=FALSE}
+```{r setup4, include=FALSE}
 library(usmap)
 library(ggplot2)
 library(shiny)
+library(knitr)
 
 
 boys <- read.csv("JGSBoys.csv", head= T)
@@ -19,24 +18,14 @@ State_Pop <- read.csv("State_Population.csv", head = T)
 State_Income <- read.csv("State_Med_Income.csv", head = T)
 State_Courses <- read.csv("State_Courses.csv", head = T)
 State_Weather <- read.csv("State_Weather.csv", head = T)
-```
 
-```{r, echo=FALSE}
 #Processing data for JGS boys
-#unique(boys$Ctry)
 
 boysUS <- boys[(boys$Ctry=="US"),]
 boysUS$St.Prov <- toupper(boysUS$St.Prov)
 boysUS <- boysUS[!((boysUS$St.Prov=="--"|boysUS$St.Prov=="BC"|boysUS$St.Prov=="AB"|boysUS$St.Prov=="GU"|boysUS$St.Prov=="DC"|boysUS$St.Prov=="PR")),]
 boysUS <- subset(boysUS, select = -c(1,2,7,9,10,11,12,13))
 rownames(boysUS) <- 1:nrow(boysUS)
-
-#boysUS
-#unique(boysUS$Ctry)
-#unique(boysUS$St.Prov)
-#nrow(boysUS)
-#nrow(boys)
-#head(boysUS,10)
 
 #Processing JGS Girls
 girlsUS <- girls[(girls$Ctry=="US"),]
@@ -45,16 +34,6 @@ girlsUS <- girlsUS[!((girlsUS$St.Prov=="--"|girlsUS$St.Prov=="BC"|girlsUS$St.Pro
 girlsUS <- subset(girlsUS, select = -c(1,2,7,9,10,11,12,13))
 rownames(girlsUS) <- 1:nrow(girlsUS)
 
-#head(girlsUS, 10)
-#unique(girlsUS$Ctry)
-#unique(girlsUS$St.Prov)
-#nrow(girlsUS)
-#nrow(girls)
-```
-
-### Number of Players in Each State
-
-```{r pop, echo=FALSE}
 #boys US map
 boys_map <- data.frame(state = unique(boysUS$St.Prov))
 boys_map[nrow(boys_map) + 1,] <- c("AK")
@@ -117,15 +96,6 @@ p3<- plot_usmap(regions = "states", data = junior_map, values = "pop", color = "
    labs(title = "JGS Players in US", subtitle = "Population of Competitive Junior Players Across the US") +
    theme(legend.position = "right")
 
-print(p1)
-print(p2)
-print(p3)
-
-```
-
-### Number of Players in Each State Per Total Population in Each State - Standardized Population
-
-```{r stand, echo=FALSE}
 #Boys With standardized population
 State_Pop_Temp <- State_Pop[-c(1:5),]
 State_Pop_Temp$NAME <- state.abb[match(State_Pop_Temp$NAME,state.name)]
@@ -162,16 +132,8 @@ p6<- plot_usmap(regions = "states", data = pop_stand_junior, values = "pop", col
   labs(title = "JGS Players in US With Standardized Population", subtitle = "Population of Competitive Junior Golf Players across the US, 
        standardized by estimate population of people in each state.") +
   theme(legend.position = "right")
-print(p4)
-print(p5)
-print(p6)
 
-```
-
-### Median Household Income Vs Player Population
-
-```{r income, echo=FALSE}
-  # Quick conversion of State_Courses' state names using State_Income
+    # Quick conversion of State_Courses' state names using State_Income
 colnames(State_Income)[1] <- "State"
 State_Income <- State_Income[order(State_Income$State),]
 State_Courses["State"] <- State_Income["State"]
@@ -197,14 +159,8 @@ p8<-plot_usmap(regions = "states", data = pop_per_income, values = "pop", color 
   scale_fill_continuous(low = "white", high = "red", name = "Index", label = scales::comma)+
   labs(title = "Players Per Median Household Income", subtitle = "Players in each state standardized by median income") +
   theme(legend.position = "right")
-print(p7)
-print(p8)
 
-```
 
-### Golf Courses Per State Vs Player Population
-
-```{r course, echo=FALSE, warning=FALSE}
 #Map of golf courses in each state
 #head(State_Courses, 5)
 State_Courses$State <- state.abb[match(State_Courses$State,state.name)]
@@ -228,13 +184,7 @@ p10<-plot_usmap(regions = "states", data = pop_per_course, values = "pop", color
   labs(title = "JGS Players in US in Relation to Courses", subtitle = "Population of Competitive Junior Golf Players across the US 
        divided by the total number of golf courses in each state") +
   theme(legend.position = "right")
-print(p9)
-print(p10)
-```
 
-### Golf Courses Per State Vs Girl and Boy Population Per State
-
-```{r coursebg, echo=FALSE}
 #For girls only
 pop_per_course_girls <- girls_map
 for (i in 1:50) {
@@ -257,13 +207,7 @@ p12<-plot_usmap(regions = "states", data = pop_per_course_boys, values = "pop", 
   labs(title = "JGS Boys in US in Relation to Courses", subtitle = "Population of Competitive Junior Golf Boys across the US 
        divided by the total number of golf courses in each state") +
   theme(legend.position = "right")
-print(p11)
-print(p12)
-```
 
-### Girls and Boys to Player Ratio
-
-```{r ratio, echo= FALSE}
 #Map of girls to all juniors ratio
 gtotal_ratio <- girls_map
 gtotal_ratio$pop <- gtotal_ratio$pop/junior_map$pop
@@ -272,21 +216,14 @@ p13<-plot_usmap(regions = "states", data = gtotal_ratio, values = "pop", color =
   labs(title = "Girls to Player Ratio Per State", subtitle = "ratio of Junior Girls to Junior Players in each state") +
   theme(legend.position = "right")
 
-#boys
+  #boys
 btotal_ratio <- boys_map
 btotal_ratio$pop <- btotal_ratio$pop/junior_map$pop
 p13_1<-plot_usmap(regions = "states", data = btotal_ratio, values = "pop", color = "black")+
   scale_fill_continuous(low = "white", high = "red", name = "Population Num", label = scales::comma)+
   labs(title = "Boys to Player Ratio Per State", subtitle = "ratio of Junior Boys to Junior Players in each state") +
   theme(legend.position = "right")
-print(p13)
-print(p13_1)
 
-```
-
-### Weather Vs Player Population
-
-```{r weather, echo=FALSE}
 #Map of Avg Weather
 State_Weather$state <- state.abb[match(State_Weather$state,state.name)]
 p14<-plot_usmap(regions = "states", data = State_Weather, values = "AvgF", color = "black")+
@@ -305,10 +242,6 @@ p16<-plot_usmap(regions = "states", data = State_Weather, values = "Afternoon", 
   scale_fill_continuous(low = "white", high = "red", name = "Percent", label = scales::comma)+
   labs(title = "Annual Avg Relative Humidity by State", subtitle = "The annual percent humidity of each state from 1971-2000") +
   theme(legend.position = "right")
-
-print(p14)
-print(p15)
-print(p16)
 
 #Player vs Avg Temp
 juniorVsTemp <- junior_map
@@ -333,9 +266,184 @@ p19<-plot_usmap(regions = "states", data = juniorVsHum, values = "pop", color = 
   scale_fill_continuous(low = "white", high = "red", name = "Index", label = scales::comma)+
   labs(title = "Player Population in Relation to Avg Temp", subtitle = "The annual average temperature from 1971-2000 of each state by Fahrenheit") +
   theme(legend.position = "right")
-print(p17)
-print(p18)
-print(p19)
+
 ```
+
+```{r setup4_1, include=FALSE}
+
+#Scatter plot Graphs
+#Junior population vs State Populations
+juniorVsStatePop<- data.frame(x = State_Pop_Temp$POPESTIMATE2021, y= junior_map$pop)
+splot1<-ggplot(juniorVsStatePop,aes(x = x,y = y)) +geom_point(colour='blue') + xlab("State Population") + ylab("Golfer Population") + ggtitle("Junior Population Vs State Population")
+
+#Boys and Girl (separated) population vs State Populations
+boysVsStatePop <- data.frame(x = State_Pop_Temp$POPESTIMATE2021, y=boys_map$pop)
+girlsVsStatePop <- data.frame(x = State_Pop_Temp$POPESTIMATE2021, y=girls_map$pop)
+splot2<-ggplot(boysVsStatePop,aes(x = x,y = y), group = measure, colour = measure) +geom_point(colour='blue') +geom_point(data=girlsVsStatePop,colour='red') + xlab("State Population") + ylab("Golfer Population") + ggtitle("Junior Population Vs State Population (Boys = Blue, Girls = Red)")
+
+#boys and Girl (separated) pop vs Household Income by State
+boysVsStateInc <- data.frame(x = State_Income$HouseholdIncome, y=boys_map$pop)
+girlsVsStateInc <- data.frame(x = State_Income$HouseholdIncome, y=girls_map$pop)
+splot3<-ggplot(boysVsStateInc,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsStateInc,colour='red') + xlab("State Income") + ylab("Golfer Population") + ggtitle("Junior Population Vs Annual Med Household Income Per State (Boys = Blue, Girls = Red)")
+
+#boys and Girl (separated) pop vs Golf Courses
+boysVsCourses <- data.frame(x = State_Courses$Courses, y=boys_map$pop)
+girlsVsCourses <- data.frame(x = State_Courses$Courses, y=girls_map$pop)
+splot4<-ggplot(boysVsCourses,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsCourses,colour='red') + xlab("Golf Courses") + ylab("Golfer Population") + ggtitle("Junior Population Vs Golf Courses Per State (Boys = Blue, Girls = Red)")
+
+#boys and Girl (separated) pop vs State Temperature 
+boysVsTemp <- data.frame(x = State_Weather$AvgF, y=boys_map$pop)
+girlsVsTemp <- data.frame(x = State_Weather$AvgF, y=girls_map$pop)
+splot5<-ggplot(boysVsTemp,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsTemp,colour='red') + xlab("Avg Temperature (F)") + ylab("Golfer Population") + ggtitle("Junior Population Vs Avg Annual Temperature (Boys = Blue, Girls = Red)")
+
+#boys and Girl (separated) pop vs State Precipitation
+boysVsPrecip <- data.frame(x = State_Weather$mm, y=boys_map$pop)
+girlsVsPrecip <- data.frame(x = State_Weather$mm, y=girls_map$pop)
+splot6<-ggplot(boysVsPrecip,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsPrecip,colour='red') + xlab("Precipitation") + ylab("Golfer Population") + ggtitle("Junior Population Vs Avg Annual Precipiation (Boys = Blue, Girls = Red)")
+
+#boys and Girl (separated) pop vs State Humidity in Morning
+boysVsMornHum <- data.frame(x = State_Weather$Morning, y=boys_map$pop)
+girlsVsMornHum <- data.frame(x = State_Weather$Morning, y=girls_map$pop)
+splot7<-ggplot(boysVsMornHum,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsMornHum,colour='red') + xlab("Morning Humidity") + ylab("Golfer Population") + ggtitle("Junior Population Vs Avg Annual Humidity in AM (Boys = Blue, Girls = Red)")
+
+#boys and Girl (separated) pop vs State Humidity in Afternoon
+boysVsAfterHum <- data.frame(x = State_Weather$Afternoon, y=boys_map$pop)
+girlsVsAfterHum <- data.frame(x = State_Weather$Afternoon, y=girls_map$pop)
+splot8<-ggplot(boysVsAfterHum,aes(x = x,y = y)) +geom_point(colour='blue') +geom_point(data=girlsVsAfterHum,colour='red') + xlab("Afternoon Humidity") + ylab("Golfer Population") + ggtitle("Junior Population Vs Avg Annual Humidity in PM (Boys = Blue, Girls = Red)")
+
+#fitting linear models
+#boys & girls pop vs state pop
+boysVsStatePopLm <- lm(y ~ x, data = boysVsStatePop)
+girlsVsStatePopLm <- lm(y ~ x, data = girlsVsStatePop)
+#boys & girls pop vs state income
+boysVsStateIncLm <- lm(y ~ x, data = boysVsStateInc)
+girlsVsStateIncLm <- lm(y ~ x, data = girlsVsStateInc)
+#boys & girls pop vs state courses
+boysVsCoursesLm <- lm(y ~ x, data = boysVsCourses)
+girlsVsCoursesLm <- lm(y ~ x, data = girlsVsCourses)
+#boys & girls pop vs state average temp
+boysVsTempLm <- lm(y ~ x, data = boysVsTemp)
+girlsVsTempLm <- lm(y ~ x, data = girlsVsTemp)
+#boys & girls pop vs state precipitation
+boysVsPrecipLm <- lm(y ~ x, data = boysVsPrecip)
+girlsVsPrecipLm <- lm(y ~ x, data = girlsVsPrecip)
+#boys & girls pop vs state humidity AM
+boysVsMornHumLm <- lm(y ~ x, data = boysVsMornHum)
+girlsVsMornHumLm <- lm(y ~ x, data = girlsVsMornHum)
+#boys & girls pop vs state humidity PM
+boysVsAfterHumLm <- lm(y ~ x, data = boysVsAfterHum)
+girlsVsAfterHumLm <- lm(y ~ x, data = girlsVsAfterHum)
+
+#visualizing linear models
+par(mfrow=c(2,2))
+
+summary(boysVsStatePopLm)
+plot(boysVsStatePopLm)
+
+summary(girlsVsStatePopLm)
+plot(girlsVsStatePopLm)
+
+summary(boysVsStateIncLm)
+plot(boysVsStateIncLm)
+
+summary(girlsVsStateIncLm)
+plot(girlsVsStateIncLm)
+
+summary(boysVsCoursesLm)
+plot(boysVsCoursesLm)
+
+summary(girlsVsCoursesLm)
+plot(girlsVsCoursesLm)
+
+summary(boysVsTempLm)
+plot(boysVsTempLm)
+
+summary(girlsVsTempLm)
+plot(girlsVsTempLm)
+
+summary(boysVsPrecipLm)
+plot(boysVsPrecipLm)
+
+summary(girlsVsPrecipLm)
+plot(girlsVsPrecipLm)
+
+summary(boysVsMornHumLm)
+plot(boysVsMornHumLm)
+
+summary(girlsVsMornHumLm)
+plot(girlsVsMornHumLm)
+
+summary(boysVsAfterHumLm)
+plot(boysVsAfterHumLm)
+
+summary(girlsVsAfterHumLm)
+plot(girlsVsAfterHumLm)
+
+par(mfrow=c(1,1))
+
+```
+
+## Evaluation of Total Player Population Vs Average Annual Temperature
+
+
+### Map of Average Temperature in Fahrenheit
+
+```{r weatherTemp, echo=FALSE}
+print(p14)
+print(p17)
+```
+
+
+#### There isn't really a noticable relationship just by observing maps. We could argue that temperature doesn't make a significant affect in where people chose to play golf.
+
+
+## Scatter Plots
+```{r splot4, echo=FALSE}
+print(splot5)
+```
+
+### Fitting Linear Models (Not Standardized Population)
+
+### Boys:
+
+#### Linear Regression Line
+
+```{r lm7, echo=FALSE}
+plot(y ~ x, data = boysVsTemp, ylab = "Golfer Population", xlab = "Temperature (F)")
+  abline(boysVsTempLm)
+```
+
+
+#### Analyzing Residuals and Testing Regression:
+
+```{r lm7_1, echo=FALSE}
+print(summary(boysVsTempLm))
+plot(boysVsTempLm)
+```
+
+### Girls:
+
+#### Linear Regression Line
+
+```{r lm8, echo=FALSE}
+plot(y ~ x, data = girlsVsTemp, ylab = "Golfer Population", xlab = "Temperature (F)")
+  abline(girlsVsTempLm)
+```
+
+#### Analyzing Residuals and Testing Regression:
+
+```{r lm8_1, echo=FALSE}
+print(summary(girlsVsTempLm))
+plot(girlsVsTempLm)
+```
+
+
+### Linear Modeling Results - Positive
+
+#### The lm() function in R creates a regression model with the given data, and the summary functions reviews the weights and performance measures of the model. The residuals allows us to measure and analyze the difference between prediction and actual results of the linear model. Residuals, along with other factors such as the p-value, are observed and tested to see how well the single-variable linear regression model fits the data.
+
+#### Weather is another factor that logically seems like a big factor to the popularity of golf. Not only is it an outside sport, but golf courses rely on lots of water, and players mostly want to experience a nice weather as they play 18 holes, so it's assumed that there is a relationship between temperature and golf popularity. The p value of the our linear model for both boys and girls was below 0.05, which means that changes in temperature correlate to changes in the amount of golf players. However, the scatterplot with the regression line does not look fitting, as we can visually see some high residuals. 
+
+#### Based on how far we analyzed the reisuals and linear regression line, we can say that the temperature in each state is a significant factor that affects golf popularity within that area in a linear scale. However, the problem is that a linear regression model shouldn't be appropriate for anything weather-related, because it should not really be a linear relationship - there is a middle, preferred temperature, while extremes are unfavored. Therefore, we are very restricted by only doing a linear regression model, and we can just barely discern temperature as a significant factor in golf popularity.
 
 
